@@ -1,0 +1,598 @@
+header = TRUE, row.names = 1, sep = "\t", check.names = FALSE)
+# 提取第一列（特征名），排序后找出重复的
+awk -F'\t' 'NR>1 {print $1}' /Users/qym/Desktop/microbiome.txt | sort | uniq -d
+title(main = paste("Elastic Net CV (best alpha =", best_alpha, ")"), line = 3)
+# 提取第一列（特征名），排序后找出重复的
+> awk -F'\t' 'NR>1 {print $1}' /Users/qym/Desktop/microbiome.txt | sort | uniq -d
+Error: unexpected string constant in "awk -F'\t'"
+Error: object 'best_alpha' not found
+# 第一条：找出完全相同的重复名字（最常见情况）
+awk -F'\t' 'NR>1 {print $1}' /Users/qym/Desktop/microbiome.txt | sort | uniq -d
+# 先以普通表格方式读取（不设 row.names）
+tmp <- read.table("/Users/qym/Desktop/microbiome.txt",
+                  header = TRUE, sep = "\t", check.names = FALSE,
+                  stringsAsFactors = FALSE)
+# 第一列就是特征名
+names <- tmp[[1]]
+# 检查重复（包括隐藏空格导致的伪重复）
+dupes <- duplicated(names) | duplicated(names, fromLast = TRUE)
+cat("疑似重复的特征数量：", sum(dupes), "\n")
+if (sum(dupes) > 0) {
+  cat("\n以下是疑似重复的特征名（请仔细看是否有空格、特殊符号）：\n")
+  print(names[dupes])
+} else {
+  cat("表面上没有重复。\n")
+}
+# 显示出现次数最多的前 15 个（看是否有异常高频）
+cat("\n出现次数最多的前 15 个特征名：\n")
+print(sort(table(names), decreasing = TRUE)[1:15])
+# 安全读取，不强制 row.names
+micro <- read.table("/Users/qym/Desktop/microbiome.txt",
+                    header = TRUE, sep = "\t", check.names = FALSE)
+# 手动处理行名，允许重复时自动加 .1 .2
+rownames(micro) <- make.names(micro[,1], unique = TRUE)
+micro <- micro[,-1] # 删掉原来的第一列
+cat("微生物组读取成功，行数 =", nrow(micro), "，列数 =", ncol(micro), "\n")
+# 先以普通表格方式读取（不设 row.names）
+tmp <- read.table("/Users/qym/Desktop/microbiome.txt",
+                  header = TRUE, sep = "\t", check.names = FALSE,
+                  stringsAsFactors = FALSE)
+# 第一列就是特征名
+names <- tmp[[1]]
+# 检查重复（包括隐藏空格导致的伪重复）
+dupes <- duplicated(names) | duplicated(names, fromLast = TRUE)
+cat("疑似重复的特征数量：", sum(dupes), "\n")
+if (sum(dupes) > 0) {
+  cat("\n以下是疑似重复的特征名（请仔细看是否有空格、特殊符号）：\n")
+  print(names[dupes])
+} else {
+  cat("表面上没有重复。\n")
+}
+# 显示出现次数最多的前 15 个（看是否有异常高频）
+cat("\n出现次数最多的前 15 个特征名：\n")
+print(sort(table(names), decreasing = TRUE)[1:15])
+View(micro)
+View(tmp)
+# 先以普通表格方式读取（不设 row.names）
+tmp <- read.table("/Users/qym/Desktop/microbiome.txt",
+                  header = TRUE, sep = "\t", check.names = FALSE,
+                  stringsAsFactors = FALSE)
+# 第一列就是特征名
+names <- tmp[[1]]
+# 检查重复（包括隐藏空格导致的伪重复）
+dupes <- duplicated(names) | duplicated(names, fromLast = TRUE)
+cat("疑似重复的特征数量：", sum(dupes), "\n")
+if (sum(dupes) > 0) {
+  cat("\n以下是疑似重复的特征名（请仔细看是否有空格、特殊符号）：\n")
+  print(names[dupes])
+} else {
+  cat("表面上没有重复。\n")
+}
+# 显示出现次数最多的前 15 个（看是否有异常高频）
+cat("\n出现次数最多的前 15 个特征名：\n")
+print(sort(table(names), decreasing = TRUE)[1:15])
+View(tmp)
+View(micro)
+View(tmp)
+View(micro)
+View(tmp)
+View(micro)
+View(tmp)
+View(micro)
+View(tmp)
+View(tmp)
+View(micro)
+View(micro)
+View(tmp)
+View(micro)
+View(tmp)
+View(micro)
+# 5. 提取目标表型 Y (以肿瘤总体积为例)
+pheno_t <- t(pheno)
+print(names[dupes])
+title(main = paste("Elastic Net CV Error (best alpha =", best_alpha, ")"), line = 3)
+title(main = paste("Elastic Net CV Error (best alpha =", best_alpha, ")"), line = 3)
+title(main = paste("Elastic Net CV Error (Alpha =", best_alpha, ")"), line = 3)
+title(main = paste("Elastic Net CV Error (Alpha =", best_alpha, ")"), line = 3)
+# 1. 检查 X_raw (菌和代谢物) 的样本名
+cat("组学矩阵的前5个样本名是：\n")
+print(head(rownames(X_raw), 5))
+# 1. 必须先重新读取桌面上的文件（让 R 重新把数据拿在手里）
+micro <- read.table("/Users/qym/Desktop/microbiome.txt", header=TRUE, row.names=1, sep="\t", check.names=FALSE)
+# 1. 强壮版读取数据 (自带幽灵空白行清洗功能)
+micro <- read.table("/Users/qym/Desktop/microbiome.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+micro <- micro[micro[, 1] != "", ] # 剔除第一列没名字的空白行
+rownames(micro) <- micro[, 1] # 安全地设置行名
+micro <- micro[, -1] # 删掉作为行名的第一列
+metabo <- read.table("/Users/qym/Desktop/metabolome.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+metabo <- metabo[metabo[, 1] != "", ]
+rownames(metabo) <- metabo[, 1]
+metabo <- metabo[, -1]
+pheno <- read.table("/Users/qym/Desktop/phenotype.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+pheno <- pheno[pheno[, 1] != "", ]
+rownames(pheno) <- pheno[, 1]
+pheno <- pheno[, -1]
+# 2. 拼接 X_raw 和 Y
+micro_t <- t(micro)
+metabo_t <- t(metabo)
+X_raw <- as.matrix(cbind(micro_t, metabo_t))
+# 强制转换为数值并保留样本名
+pheno_t <- t(pheno)
+Y_raw <- as.numeric(pheno_t[, "Total_Tumor_size"])
+View(pheno)
+View(pheno)
+print(colnames(pheno_t))
+# 把下划线换成空格，或者替换成 print() 出来的确切名字
+Y_raw <- as.numeric(pheno_t[, "Total Tumor size"])
+names(Y_raw) <- rownames(pheno_t)
+Y_transformed <- log2(Y_raw + 1)
+# 重新运行核对代码
+common_samples <- intersect(rownames(X_raw), names(Y_transformed))
+cat("\n🚨 最终 X 和 Y 成功匹配上的样本总数是：", length(common_samples), "\n")
+View(pheno)
+View(micro)
+View(metabo)
+View(pheno)
+# ==========================================
+# 终极战役：Elastic Net 模型训练与特征提取
+# ==========================================
+# 1. 强制数值化防爆雷 (确保全是干净的数字)
+class(X_raw) <- "numeric"
+class(Y_transformed) <- "numeric"
+X <- X_raw[common_samples, ]
+Y <- Y_transformed[common_samples]
+# 2. 超参数网格寻优与交叉验证
+set.seed(2026) # 锁定随机种子，结果可重复
+alphas <- seq(0.1, 0.9, by = 0.1)
+cv_results <- list()
+min_cv_errors <- numeric(length(alphas))
+# 🌟 智能调整折数：样本量16个，采用稳健的 5 折交叉验证 (nfolds=5)
+cat("\n⏳ 正在启动弹性网络建模 (自动采用 5-fold CV，并执行内部标准化)...\n")
+for (i in seq_along(alphas)) {
+  # family="gaussian" 处理连续数值，standardize=TRUE 内部抹平量纲差异
+  fit <- cv.glmnet(X, Y, family = "gaussian", alpha = alphas[i], nfolds = 5, standardize = TRUE)
+  cv_results[[i]] <- fit
+  min_cv_errors[i] <- min(fit$cvm)
+}
+# 3. 锁定最优模型
+best_alpha_index <- which.min(min_cv_errors)
+best_alpha <- alphas[best_alpha_index]
+best_cv_model <- cv_results[[best_alpha_index]]
+cat("🎯 寻优结束！你的数据最适合的 Alpha 值为:", best_alpha, "\n")
+# 4. 提取终极 Biomarker Panel (顶刊推荐的 lambda.1se 极简模型)
+best_lambda <- best_cv_model$lambda.1se
+coef_matrix <- coef(best_cv_model, s = best_lambda)
+# 提取特征系数
+active_features <- rownames(coef_matrix)[which(coef_matrix[, 1] != 0)]
+active_coefficients <- coef_matrix[which(coef_matrix[, 1] != 0), 1]
+# 5. 打印最终战果
+if(length(active_features) <= 1) {
+  cat("⚠️ 模型经过最严苛的惩罚后，没有特征存活。你可以把上面代码里的 best_lambda 改成 best_cv_model$lambda.min 再试一次。\n")
+} else {
+  biomarker_panel <- data.frame(Feature = active_features, Coefficient = active_coefficients)
+  biomarker_panel <- biomarker_panel[biomarker_panel$Feature != "(Intercept)", ]
+  biomarker_panel <- biomarker_panel[order(abs(biomarker_panel$Coefficient), decreasing = TRUE), ]
+  cat("\n🏆 恭喜！极简抗癌微生态/代谢诊断面板提取完毕：\n")
+  print(biomarker_panel)
+}
+# 6. 画出最终的交叉验证误差曲线图
+plot(best_cv_model)
+title(main = paste("Elastic Net CV Error (Alpha =", best_alpha, ")"), line = 3)
+View(biomarker_panel)
+View(biomarker_panel)
+View(best_cv_model)
+View(best_cv_model)
+View(coef_matrix)
+# ==========================================
+# 顶刊级可视化：双向特征重要性棒棒糖图 (Lollipop Plot)
+# ==========================================
+# 1. 检查并安装宇宙最强绘图包 ggplot2
+if (!require("ggplot2")) install.packages("ggplot2")
+library(ggplot2)
+# 2. 数据整理与美化准备
+# 增加一列标记：大于0的叫"促癌风险 (Risk)"，小于0的叫"抑癌保护 (Protective)"
+biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0,
+                                    "Risk (Positive)",
+                                    "
+# 2. 数据整理与美化准备
+biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0,
+"Risk (Positive)",
+ggsave("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", plot = p, width = 9, height = 7, dpi = 300)
+ggsave("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", plot = p, width = 9, height = 7, dpi = 300)
+View(pheno_t)
+View(pheno_t)
+View(micro_t)
+{
+# 1. 先检查你的数据还在不在内存里
+if(!exists("biomarker_panel")) {
+stop("🚨 哎呀！biomarker_panel 数据不见了！请先往上翻，重新运行一下提取 Biomarker 的 Elastic Net 模型代码！")
+}
+# 2. 数据准备
+biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0,
+"Risk (Positive)",
+"Protective (Negative)")
+biomarker_panel$Feature <- factor(biomarker_panel$Feature,
+levels = biomarker_panel$Feature[order(biomarker_panel$Coefficient)])
+# 3. 强制打开桌面 PDF 画板
+pdf("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", width = 9, height = 7)
+# 4. 绘制神仙图 p
+p <- ggplot(biomarker_panel, aes(x = Feature, y = Coefficient, color = Direction)) +
+geom_hline(yintercept = 0, linetype = "dashed", color = "gray60", linewidth = 0.8) +
+geom_segment(aes(x = Feature, xend = Feature, y = 0, yend = Coefficient), linewidth = 1.2) +
+geom_point(size = 4) +
+coord_flip() +
+scale_color_manual(values = c("Risk (Positive)" = "#E64B35", "Protective (Negative)" = "#4DBBD5")) +
+                                    theme_minimal(base_size = 14) +
+                                      labs(
+                                        title = "Core Biomarker Panel for Tumor Size Prediction",
+                                        subtitle = "Selected by Multi-omics Elastic Net Regression",
+                                        x = "",
+                                        y = "Elastic Net Coefficient (Importance)"
+                                      ) +
+                                      theme(
+                                        plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+                                        plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "gray40"),
+                                        legend.position = "bottom",
+                                        legend.title = element_blank(),
+                                        legend.text = element_text(size = 12),
+                                        panel.grid.minor = element_blank(),
+                                        axis.text.y = element_text(color = "black", face = "italic", size = 11)
+                                      )
+                                    # 5. 把图 p 印到画板上并保存关闭
+                                    print(p)
+                                    dev.off()
+                                    cat("\n✅ 完美搞定！代码已强制执行，请去桌面查看 Elastic_Net_Biomarker_Lollipop.pdf 文件！\n")
+                                    }
+# ==========================================
+# 提取模型性能指标：R-squared 与 RMSE
+# ==========================================
+# 1. 提取我们最终选定的极简模型惩罚系数 (lambda.1se)
+best_lambda <- best_cv_model$lambda.1se
+# 2. 让模型对原本的 X 矩阵进行预测，得到预测的 Y 值 (Y_pred)
+# 注意：此时的 Y 和 Y_pred 都是经过 log2 转换的数值
+Y_pred <- predict(best_cv_model, newx = X, s = best_lambda)
+# 3. 计算 RMSE (均方根误差)
+# 残差 (真实值 - 预测值)
+residuals <- Y - Y_pred
+MSE <- mean(residuals^2)
+RMSE <- sqrt(MSE)
+# 4. 计算 R-squared (决定系数)
+# R2 = 1 - (残差平方和 / 总平方和)
+SST <- sum((Y - mean(Y))^2) # Total Sum of Squares
+SSR <- sum(residuals^2) # Residual Sum of Squares
+R_squared <- 1 - (SSR / SST)
+# 5. 在控制台打印出极其漂亮的战报
+cat("\n======================================\n")
+cat("📈 Elastic Net 模型性能评估战报\n")
+cat("======================================\n")
+cat("👉 R-squared (R2) :", round(R_squared, 4), "\n")
+cat("👉 RMSE (均方根误差) :", round(RMSE, 4), "\n")
+cat("======================================\n")
+# ==========================================
+# 额外福利：画一张顶刊级别的“预测拟合散点图”
+# ==========================================
+library(ggplot2)
+# 构建绘图数据框
+fit_data <- data.frame(
+  Actual = as.numeric(Y),
+  Predicted = as.numeric(Y_pred)
+)
+# 绘制散点图与完美拟合对角线
+p_fit <- ggplot(fit_data, aes(x = Actual, y = Predicted)) +
+  geom_point(size = 4, color = "#4DBBD5", alpha = 0.8) + # 绘制散点
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "#E64B35", linewidth = 1) + # 绘制理想状态下的 1:1 对角线
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.8) + # 绘制实际的线性拟合趋势线
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Model Performance: Actual vs. Predicted",
+    subtitle = paste0("R² = ", round(R_squared, 3), " | RMSE = ", round(RMSE, 3)),
+    x = "Actual Tumor Size (Log2 Transformed)",
+    y = "Predicted Tumor Size"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "gray30"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+  )
+# 打印图像并保存到桌面
+print(p_fit)
+ggsave("/Users/qym/Desktop/Elastic_Net_Fit_Scatter.pdf", plot = p_fit, width = 6, height = 6, dpi = 300)
+cat("✅ 拟合图已生成！请去桌面查看 Elastic_Net_Fit_Scatter.pdf 文件！\n")
+
+
+
+> # 1. 必须先重新读取桌面上的文件（让 R 重新把数据拿在手里）
+  > micro <- read.table("/Users/qym/Desktop/microbiome.txt", header=TRUE, row.names=1, sep="\t", check.names=FALSE)
+Error in read.table("/Users/qym/Desktop/microbiome.txt", header = TRUE,  : 
+                      duplicate 'row.names' are not allowed
+                    > # 1. 强壮版读取数据 (自带幽灵空白行清洗功能)
+                      > micro <- read.table("/Users/qym/Desktop/microbiome.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+                    > micro <- micro[micro[, 1] != "", ] # 剔除第一列没名字的空白行
+                    > rownames(micro) <- micro[, 1]      # 安全地设置行名
+                    > micro <- micro[, -1]               # 删掉作为行名的第一列
+                    > 
+                      > metabo <- read.table("/Users/qym/Desktop/metabolome.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+                    > metabo <- metabo[metabo[, 1] != "", ]
+                    > rownames(metabo) <- metabo[, 1]
+                    > metabo <- metabo[, -1]
+                    > 
+                      > pheno <- read.table("/Users/qym/Desktop/phenotype.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+                    > pheno <- pheno[pheno[, 1] != "", ]
+                    > rownames(pheno) <- pheno[, 1]
+                    > pheno <- pheno[, -1]
+                    > 
+                      > # 2. 拼接 X_raw 和 Y
+                      > micro_t <- t(micro)
+                    > metabo_t <- t(metabo)
+                    > X_raw <- as.matrix(cbind(micro_t, metabo_t))
+                    > 
+                      > # 强制转换为数值并保留样本名
+                      > pheno_t <- t(pheno)
+                    > Y_raw <- as.numeric(pheno_t[, "Total_Tumor_size"])
+                    Error in pheno_t[, "Total_Tumor_size"] : subscript out of bounds
+                    > View(pheno)
+                    > View(pheno)
+                    > print(colnames(pheno_t))
+                    [1] "Colon organ coefficient " "DAI"                      "tumor number"            
+                    [4] "Average tumor size"       "Total Tumor size"         "Cox-2"                   
+                    [7] "C-myc"                    "TNF-alpha"                "Axin-2"                  
+                    [10] "IL-6"                     "IL-1beta"                
+                    > # 把下划线换成空格，或者替换成 print() 出来的确切名字
+                      > Y_raw <- as.numeric(pheno_t[, "Total Tumor size"])
+                    > names(Y_raw) <- rownames(pheno_t)
+                    > Y_transformed <- log2(Y_raw + 1)
+                    > 
+                      > # 重新运行核对代码
+                      > common_samples <- intersect(rownames(X_raw), names(Y_transformed))
+                    > cat("\n🚨 最终 X 和 Y 成功匹配上的样本总数是：", length(common_samples), "\n")
+                    
+                    🚨 最终 X 和 Y 成功匹配上的样本总数是： 16 
+                    > View(pheno)
+                    > View(micro)
+                    > View(metabo)
+                    > View(pheno)
+                    > # ==========================================
+                    > # 终极战役：Elastic Net 模型训练与特征提取
+                      > # ==========================================
+                    > 
+                      > # 1. 强制数值化防爆雷 (确保全是干净的数字)
+                      > class(X_raw) <- "numeric"
+                    > class(Y_transformed) <- "numeric"
+                    > X <- X_raw[common_samples, ]
+                    > Y <- Y_transformed[common_samples]
+                    > 
+                      > # 2. 超参数网格寻优与交叉验证
+                      > set.seed(2026) # 锁定随机种子，结果可重复
+                    > alphas <- seq(0.1, 0.9, by = 0.1)
+                    > cv_results <- list()
+                    > min_cv_errors <- numeric(length(alphas))
+                    > 
+                      > # 🌟 智能调整折数：样本量16个，采用稳健的 5 折交叉验证 (nfolds=5)
+                      > cat("\n⏳ 正在启动弹性网络建模 (自动采用 5-fold CV，并执行内部标准化)...\n")
+                    
+                    ⏳ 正在启动弹性网络建模 (自动采用 5-fold CV，并执行内部标准化)...
+                    > 
+                      > for (i in seq_along(alphas)) {
+                        +     # family="gaussian" 处理连续数值，standardize=TRUE 内部抹平量纲差异
+                          +     fit <- cv.glmnet(X, Y, family = "gaussian", alpha = alphas[i], nfolds = 5, standardize = TRUE)
+                          +     cv_results[[i]] <- fit
+                          +     min_cv_errors[i] <- min(fit$cvm) 
+                          + }
+                    > 
+                      > # 3. 锁定最优模型
+                      > best_alpha_index <- which.min(min_cv_errors)
+                    > best_alpha <- alphas[best_alpha_index]
+                    > best_cv_model <- cv_results[[best_alpha_index]]
+                    > 
+                      > cat("🎯 寻优结束！你的数据最适合的 Alpha 值为:", best_alpha, "\n")
+                    🎯 寻优结束！你的数据最适合的 Alpha 值为: 0.1 
+                    > 
+                      > # 4. 提取终极 Biomarker Panel (顶刊推荐的 lambda.1se 极简模型)
+                      > best_lambda <- best_cv_model$lambda.1se 
+                    > coef_matrix <- coef(best_cv_model, s = best_lambda)
+                    > 
+                      > # 提取特征系数
+                      > active_features <- rownames(coef_matrix)[which(coef_matrix[, 1] != 0)]
+                    > active_coefficients <- coef_matrix[which(coef_matrix[, 1] != 0), 1]
+                    > 
+                      > # 5. 打印最终战果
+                      > if(length(active_features) <= 1) { 
+                        +     cat("⚠️ 模型经过最严苛的惩罚后，没有特征存活。你可以把上面代码里的 best_lambda 改成 best_cv_model$lambda.min 再试一次。\n")
+                        + } else {
+                          +     biomarker_panel <- data.frame(Feature = active_features, Coefficient = active_coefficients)
+                          +     biomarker_panel <- biomarker_panel[biomarker_panel$Feature != "(Intercept)", ]
+                          +     biomarker_panel <- biomarker_panel[order(abs(biomarker_panel$Coefficient), decreasing = TRUE), ]
+                          +     
+                            +     cat("\n🏆 恭喜！极简抗癌微生态/代谢诊断面板提取完毕：\n")
+                          +     print(biomarker_panel)
+                          + }
+                    
+                    🏆 恭喜！极简抗癌微生态/代谢诊断面板提取完毕：
+                    Feature  Coefficient
+                    9,10-Ep-13-HODE                                 9,10-Ep-13-HODE -0.035492015
+                    Dihydroresveratrol                           Dihydroresveratrol -0.032198378
+                    3-Hydroxy Oleanolic acid               3-Hydroxy Oleanolic acid -0.030631934
+                    9-KODE                                                   9-KODE -0.028799331
+                    Enterococcus faecium                       Enterococcus faecium -0.028339831
+                    13(S)-HpODE                                         13(S)-HpODE -0.024675936
+                    Tetrahydroxyflavanone glycoside Tetrahydroxyflavanone glycoside -0.023513040
+                    Picrotoxinin                                       Picrotoxinin -0.022600495
+                    9,10,11-TriHOME                                 9,10,11-TriHOME -0.021801071
+                    Burkholderia sp. 14                         Burkholderia sp. 14  0.020220462
+                    Herbaspirillum sp. PIV-34-1         Herbaspirillum sp. PIV-34-1  0.018330220
+                    CMPF                                                       CMPF -0.016950123
+                    Wogonin                                                 Wogonin -0.014586205
+                    15,16-DiHOME                                       15,16-DiHOME -0.013890417
+                    Oleoyl-biotin                                     Oleoyl-biotin  0.013668116
+                    Gentisic acid                                     Gentisic acid -0.013198821
+                    12-OPDA                                                 12-OPDA -0.012500928
+                    Mepitiostane                                       Mepitiostane -0.007848075
+                    Alboinone                                             Alboinone -0.007806076
+                    6-Hydroxyenterodiol                         6-Hydroxyenterodiol -0.006134501
+                    Feruloylquinic acid                         Feruloylquinic acid -0.006068236
+                    Malabaricone C                                   Malabaricone C -0.004941362
+                    Pitheduloside I                                 Pitheduloside I -0.003242681
+                    PG                                                           PG  0.002898445
+                    > 
+                      > # 6. 画出最终的交叉验证误差曲线图
+                      > plot(best_cv_model)
+                    > title(main = paste("Elastic Net CV Error (Alpha =", best_alpha, ")"), line = 3)
+                    > View(biomarker_panel)
+                    > View(biomarker_panel)
+                    > View(best_cv_model)
+                    > View(best_cv_model)
+                    > View(coef_matrix)
+                    > # ==========================================
+                    > # 顶刊级可视化：双向特征重要性棒棒糖图 (Lollipop Plot)
+                      > # ==========================================
+                    > 
+                      > # 1. 检查并安装宇宙最强绘图包 ggplot2
+                      > if (!require("ggplot2")) install.packages("ggplot2")
+                    Loading required package: ggplot2
+                    Warning message:
+                      package ‘ggplot2’ was built under R version 4.4.3 
+                    > library(ggplot2)
+                    > 
+                      > # 2. 数据整理与美化准备
+                      > # 增加一列标记：大于0的叫"促癌风险 (Risk)"，小于0的叫"抑癌保护 (Protective)"
+                      > biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0, 
+                                                            +                                     "Risk (Positive)", 
+                                                            +                                     "
++ # 2. 数据整理与美化准备
++ biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0, 
++                                     "Risk (Positive)", 
+Error: unexpected symbol in:
+"biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0, 
+                                     "Risk"
+                                     > ggsave("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", plot = p, width = 9, height = 7, dpi = 300)
+                                     Error: object 'p' not found
+                                     > ggsave("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", plot = p, width = 9, height = 7, dpi = 300)
+                                     Error: object 'p' not found
+                                     > View(pheno_t)
+                                     > View(pheno_t)
+                                     > View(micro_t)
+                                     > {
+                                       +     # 1. 先检查你的数据还在不在内存里
+                                         +     if(!exists("biomarker_panel")) {
+                                           +         stop("🚨 哎呀！biomarker_panel 数据不见了！请先往上翻，重新运行一下提取 Biomarker 的 Elastic Net 模型代码！")
+                                           +     }
+                                       +     
+                                         +     # 2. 数据准备
+                                         +     biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0, 
+                                                                                   +                                         "Risk (Positive)", 
+                                                                                   +                                         "Protective (Negative)")
+                                         +     
+                                           +     biomarker_panel$Feature <- factor(biomarker_panel$Feature, 
+                                                                                   +                                       levels = biomarker_panel$Feature[order(biomarker_panel$Coefficient)])
+                                           +     
+                                             +     # 3. 强制打开桌面 PDF 画板
+                                             +     pdf("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", width = 9, height = 7)
+                                           +     
+                                             +     # 4. 绘制神仙图 p
+                                             +     p <- ggplot(biomarker_panel, aes(x = Feature, y = Coefficient, color = Direction)) +
+                                               +         geom_hline(yintercept = 0, linetype = "dashed", color = "gray60", linewidth = 0.8) +
+                                               +         geom_segment(aes(x = Feature, xend = Feature, y = 0, yend = Coefficient), linewidth = 1.2) +
+                                               +         geom_point(size = 4) +
+                                               +         coord_flip() +
+                                               +         scale_color_manual(values = c("Risk (Positive)" = "#E64B35", "Protective (Negative)" = "#4DBBD5")) +
+                                               +         theme_minimal(base_size = 14) +
+                                               +         labs(
+                                                 +             title = "Core Biomarker Panel for Tumor Size Prediction",
+                                                 +             subtitle = "Selected by Multi-omics Elastic Net Regression",
+                                                 +             x = "", 
+                                                 +             y = "Elastic Net Coefficient (Importance)"
+                                                 +         ) +
+                                               +         theme(
+                                                 +             plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+                                                 +             plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "gray40"),
+                                                 +             legend.position = "bottom",
+                                                 +             legend.title = element_blank(),
+                                                 +             legend.text = element_text(size = 12),
+                                                 +             panel.grid.minor = element_blank(),
+                                                 +             axis.text.y = element_text(color = "black", face = "italic", size = 11)
+                                                 +         )
+                                             +     
+                                               +     # 5. 把图 p 印到画板上并保存关闭
+                                               +     print(p)
+                                             +     dev.off()
+                                             +     
+                                               +     cat("\n✅ 完美搞定！代码已强制执行，请去桌面查看 Elastic_Net_Biomarker_Lollipop.pdf 文件！\n")
+                                             + }
+                                     
+                                     ✅ 完美搞定！代码已强制执行，请去桌面查看 Elastic_Net_Biomarker_Lollipop.pdf 文件！
+                                     > # ==========================================
+                                     > # 提取模型性能指标：R-squared 与 RMSE
+                                       > # ==========================================
+                                     > 
+                                       > # 1. 提取我们最终选定的极简模型惩罚系数 (lambda.1se)
+                                       > best_lambda <- best_cv_model$lambda.1se
+                                     > 
+                                       > # 2. 让模型对原本的 X 矩阵进行预测，得到预测的 Y 值 (Y_pred)
+                                       > # 注意：此时的 Y 和 Y_pred 都是经过 log2 转换的数值
+                                       > Y_pred <- predict(best_cv_model, newx = X, s = best_lambda)
+                                     > 
+                                       > # 3. 计算 RMSE (均方根误差)
+                                       > # 残差 (真实值 - 预测值)
+                                       > residuals <- Y - Y_pred 
+                                     > MSE <- mean(residuals^2)
+                                     > RMSE <- sqrt(MSE)
+                                     > 
+                                       > # 4. 计算 R-squared (决定系数)
+                                       > # R2 = 1 - (残差平方和 / 总平方和)
+                                       > SST <- sum((Y - mean(Y))^2) # Total Sum of Squares
+                                     > SSR <- sum(residuals^2)     # Residual Sum of Squares
+                                     > R_squared <- 1 - (SSR / SST)
+                                     > 
+                                       > # 5. 在控制台打印出极其漂亮的战报
+                                       > cat("\n======================================\n")
+                                     
+                                     ======================================
+                                       > cat("📈 Elastic Net 模型性能评估战报\n")
+                                     📈 Elastic Net 模型性能评估战报
+                                     > cat("======================================\n")
+                                     ======================================
+                                       > cat("👉 R-squared (R2) :", round(R_squared, 4), "\n")
+                                     👉 R-squared (R2) : 0.3486 
+                                     > cat("👉 RMSE (均方根误差) :", round(RMSE, 4), "\n")
+                                     👉 RMSE (均方根误差) : 1.1662 
+                                     > cat("======================================\n")
+                                     ======================================
+                                       > 
+                                       > # ==========================================
+                                     > # 额外福利：画一张顶刊级别的“预测拟合散点图”
+                                       > # ==========================================
+                                     > library(ggplot2)
+                                     > 
+                                       > # 构建绘图数据框
+                                       > fit_data <- data.frame(
+                                         +     Actual = as.numeric(Y),
+                                         +     Predicted = as.numeric(Y_pred)
+                                         + )
+                                     > 
+                                       > # 绘制散点图与完美拟合对角线
+                                       > p_fit <- ggplot(fit_data, aes(x = Actual, y = Predicted)) +
+                                       +     geom_point(size = 4, color = "#4DBBD5", alpha = 0.8) +          # 绘制散点
+                                       +     geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "#E64B35", linewidth = 1) + # 绘制理想状态下的 1:1 对角线
+                                       +     geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.8) + # 绘制实际的线性拟合趋势线
+                                       +     theme_minimal(base_size = 14) +
+                                       +     labs(
+                                         +         title = "Model Performance: Actual vs. Predicted",
+                                         +         subtitle = paste0("R² = ", round(R_squared, 3), " | RMSE = ", round(RMSE, 3)),
+                                         +         x = "Actual Tumor Size (Log2 Transformed)",
+                                         +         y = "Predicted Tumor Size"
+                                         +     ) +
+                                       +     theme(
+                                         +         plot.title = element_text(hjust = 0.5, face = "bold"),
+                                         +         plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "gray30"),
+                                         +         panel.border = element_rect(color = "black", fill = NA, linewidth = 1)
+                                         +     )
+                                     > 
+                                       > # 打印图像并保存到桌面
+                                       > print(p_fit)
+                                     `geom_smooth()` using formula = 'y ~ x'
+                                     > ggsave("/Users/qym/Desktop/Elastic_Net_Fit_Scatter.pdf", plot = p_fit, width = 6, height = 6, dpi = 300)
+                                     `geom_smooth()` using formula = 'y ~ x'
+                                     > 
+                                       > cat("✅ 拟合图已生成！请去桌面查看 Elastic_Net_Fit_Scatter.pdf 文件！\n")
+                                     ✅ 拟合图已生成！请去桌面查看 Elastic_Net_Fit_Scatter.pdf 文件！
+                                     > 
