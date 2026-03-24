@@ -1,0 +1,38 @@
+# 1. 加载画图包
+library(ggplot2)
+
+# 2. 梳理数据方向和排序
+biomarker_panel$Direction <- ifelse(biomarker_panel$Coefficient > 0, 
+                                    "Risk (Positive)", 
+                                    "Protective (Negative)")
+
+biomarker_panel$Feature <- factor(biomarker_panel$Feature, 
+                                  levels = biomarker_panel$Feature[order(biomarker_panel$Coefficient)])
+
+# 3. 将画好的图赋值给变量 p
+p <- ggplot(biomarker_panel, aes(x = Feature, y = Coefficient, color = Direction)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray60", linewidth = 0.8) +
+  geom_segment(aes(x = Feature, xend = Feature, y = 0, yend = Coefficient), linewidth = 1.2) +
+  geom_point(size = 4) +
+  coord_flip() +
+  scale_color_manual(values = c("Risk (Positive)" = "#E64B35", "Protective (Negative)" = "#4DBBD5")) +
+  theme_minimal(base_size = 14) +
+  labs(
+    title = "Core Biomarker Panel for Tumor Size Prediction",
+    subtitle = "Selected by Multi-omics Elastic Net Regression",
+    x = "", 
+    y = "Elastic Net Coefficient (Importance)"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "gray40"),
+    legend.position = "bottom",
+    legend.title = element_blank(),
+    legend.text = element_text(size = 12),
+    panel.grid.minor = element_blank(),
+    axis.text.y = element_text(color = "black", face = "italic", size = 11)
+  )
+
+# 4. 打印并保存
+print(p)
+ggsave("/Users/qym/Desktop/Elastic_Net_Biomarker_Lollipop.pdf", plot = p, width = 9, height = 7, dpi = 300)
