@@ -1,0 +1,129 @@
+# ==============================================================================
+# 鹰嘴豆多组学联合 Elastic Net 分析管道：精准预测靶基因 [cox-2] 表达量
+# ==============================================================================
+
+# 1. 准备环境并加载必备的机器学习与绘图包
+if (!require("glmnet")) install.packages("glmnet")
+if (!require("ggplot2")) install.packages("ggplot2")
+library(glmnet)
+library(ggplot2)
+
+# 👇 请在这里确认 phenotype.txt 表头里 COX-2 的确切拼写！(注意大小写)
+TARGET_GENE <- "cox-2"  
+# 👆 确认预测结局指标
+
+cat(paste("⏳ 正在安全读取数据，目标表型锁定为：", TARGET_GENE, "...\n"))
+
+# 2. 强壮版读取数据 (自带 Excel 幽灵空白行清洗功能)
+micro <- read.table("/Users/qym/Desktop/microbiome.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+micro <- micro[micro[, 1] != "", ]; rownames(micro) <- micro[, 1]; micro <- micro[, -1]
+
+metabo <- read.table("/Users/qym/Desktop/metabolome.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+metabo <- metabo[metabo[, 1] != "", ]; rownames(metabo) <- metabo[, 1]; metabo <- metabo[, -1]
+
+pheno <- read.table("/Users/qym/Desktop/phenotype.txt", header=TRUE, sep="\t", check.names=FALSE, fill=TRUE, stringsAsFactors=FALSE)
+pheno <- pheno[pheno[, 1] != "", ]; rownames(pheno) <- pheno[, 1]; pheno <- pheno[, -1]
+
+# 3. 拼接组学特征矩阵 X_raw
+X_raw <- as.matrix(cbind(t(micro), t(metabo)))
+
+# 4. 提取表型 Y (cox-2) 并做稳健的 Log2 转换
+pheno_t <- t(pheno)
+if (!(TARGET_GENE %in% colnames(pheno_t))) {
+  stop(paste("🚨 致命错误：在 phenotype.txt 里找不到叫做", TARGET_GENE, "的列！请打开 Excel 确认确切的拼写和大小写！"))
+}
+Y_raw <- as.numeric(pheno_t[, TARGET_GENE])
+names(Y_raw) <- rownames(pheno_t)
+Y_transformed <- log2(Y_raw + 1)
+
+# 5. 严格对齐样本名与强制数值化 (防爆雷)
+common_samples <- intersect(rownames(X_raw), names(Y_transformed))
+X <- X_raw[common_samples, ]; class(X) <- "numeric"
+Y <- Y_transformed[common_samples]; class(Y) <- "numeric"
+cat("✅ 数据清洗完毕，成功匹配样本总数：", length(common_samples), "只小鼠\n")
+
+# ==================== 弹性网络建模 ====================
+set.seed(2026) # 锁定随机种子，确保每次跑出的结果一致
+alphas <- seq(0.1, 0.9, by = 0.1)
+cv_results <- list()
+min_cv_errors <- numeric(length(alphas))
+
+cat(paste("\n⏳ 正在针对基因 [", TARGET_GENE, "] 启动 Elastic Net 建模 (开启内部标准化)...\n"))
+for (i in seq_along(alphas)) {
+  fit <- cv.glmnet(X, Y, family = "gaussian", alpha = alphas[i], nfolds = 5, standardize = TRUE)
+  cv_results[[i]] <- fit
+  min_cv_errors[i] <- min(fit$cvm) 
+}
+
+best_cv_model <- cv_results[[which.min(min_cv_errors)]]
+best_lambda <- best_cv_model$lambda.1se 
+coef_matrix <- coef(best_cv_model, s = best_lambda)
+
+active_features <- rownames(coef_matrix)[which(coef_matrix[, 1] != 0)]
+active_coefficients <- coef_matrix[which(coef_matrix[, 1] != 0), 1]
+
+# 智能容错：如果 1se 把特征全杀光了，自动降级为误差最小的 lambda.min
+if(length(active_features) <= 1) { 
+  cat("⚠️ 极简模型(1se)筛选过于严格，已自动切换为最佳预测性能参数 (lambda.min)...\n")
+  best_lambda <- best_cv_model$lambda.min
+  coef_matrix <- coef(best_cv_model, s = best_lambda)
+  active_features <- rownames(coef_matrix)[which(coef_matrix[, 1] != 0)]
+  active_coefficients <- coef_matrix[which(coef_matrix[, 1] != 0), 1]
+}
+
+panel_gene <- data.frame(Feature = active_features, Coefficient = active_coefficients)
+panel_gene <- panel_gene[panel_gene$Feature != "(Intercept)", ]
+panel_gene <- panel_gene[order(abs(panel_gene$Coefficient), decreasing = TRUE), ]
+
+cat(paste("\n🏆 预测 [", TARGET_GENE, "] 表达量的核心标志物已提取：\n"))
+print(panel_gene)
+
+# ==================== 计算 R2 和 RMSE ====================
+Y_pred <- predict(best_cv_model, newx = X, s = best_lambda)
+residuals <- Y - Y_pred 
+RMSE <- sqrt(mean(residuals^2))
+R_squared <- 1 - (sum(residuals^2) / sum((Y - mean(Y))^2))
+
+cat("\n======================================\n")
+cat(paste("📈 基因 [", TARGET_GENE, "] 预测模型性能战报\n"))
+cat("👉 R-squared (R2) :", round(R_squared, 4), "\n")
+cat("👉 RMSE (均方根误差) :", round(RMSE, 4), "\n")
+cat("======================================\n")
+
+# ==================== 顶刊级可视化 ====================
+
+# 1. 绘制双向特征重要性棒棒糖图
+panel_gene$Direction <- ifelse(panel_gene$Coefficient > 0, 
+                               paste("Risk (Upregulates", TARGET_GENE, ")"), 
+                               paste("Protective (Downregulates", TARGET_GENE, ")"))
+
+panel_gene$Feature <- factor(panel_gene$Feature, levels = panel_gene$Feature[order(panel_gene$Coefficient)])
+
+p_lollipop <- ggplot(panel_gene, aes(x = Feature, y = Coefficient, color = Direction)) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray60", linewidth = 0.8) +
+  geom_segment(aes(x = Feature, xend = Feature, y = 0, yend = Coefficient), linewidth = 1.2) +
+  geom_point(size = 4) + coord_flip() +
+  scale_color_manual(values = setNames(c("#E64B35", "#4DBBD5"), 
+                                       c(paste("Risk (Upregulates", TARGET_GENE, ")"), 
+                                         paste("Protective (Downregulates", TARGET_GENE, ")")))) +
+  theme_minimal(base_size = 14) +
+  labs(title = paste("Biomarker Panel Predicting", TARGET_GENE, "Expression"), x = "", y = "Elastic Net Coefficient") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), legend.position = "bottom", legend.title = element_blank(),
+        axis.text.y = element_text(color = "black", face = "italic", size = 11))
+
+ggsave(paste0("/Users/qym/Desktop/Elastic_Net_Lollipop_", TARGET_GENE, ".pdf"), plot = p_lollipop, width = 9, height = 7, dpi = 300)
+
+# 2. 绘制预测拟合散点图
+fit_data <- data.frame(Actual = as.numeric(Y), Predicted = as.numeric(Y_pred))
+
+p_scatter <- ggplot(fit_data, aes(x = Actual, y = Predicted)) +
+  geom_point(size = 4, color = "#4DBBD5", alpha = 0.8) +          
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "#E64B35", linewidth = 1) + 
+  geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 0.8) + 
+  theme_minimal(base_size = 14) +
+  labs(title = paste(TARGET_GENE, "Actual vs. Predicted"), subtitle = paste0("R² = ", round(R_squared, 3), " | RMSE = ", round(RMSE, 3)), x = paste("Actual", TARGET_GENE, "(Log2)"), y = "Predicted Expression") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"), plot.subtitle = element_text(hjust = 0.5, face = "italic", color = "gray30"), panel.border = element_rect(color = "black", fill = NA, linewidth = 1))
+
+ggsave(paste0("/Users/qym/Desktop/Elastic_Net_Scatter_", TARGET_GENE, ".pdf"), plot = p_scatter, width = 6, height = 6, dpi = 300)
+
+cat(paste("\n✅ 全部搞定！请去桌面查看关于", TARGET_GENE, "的最新战报（两个 PDF 文件）！\n"))
